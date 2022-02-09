@@ -1,0 +1,17 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2022-02-08T16:57:59-08:00",
+  "id": "dt-kubernetes-setup",
+  "duration": 56,
+  "title": "Dynatrace K8s Operator Install \u0026 Walk Through",
+  "summary": "Dynatrace K8s Operator Install \u0026 Walk Through",
+  "source": "kubernetes-setup.md",
+  "theme": "",
+  "status": null,
+  "category": null,
+  "tags": [],
+  "url": "dt-kubernetes-setup"
+}

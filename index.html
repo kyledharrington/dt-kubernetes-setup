@@ -1,0 +1,199 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Dynatrace K8s Operator Install &amp; Walk Through</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="dt-kubernetes-setup"
+                  title="Dynatrace K8s Operator Install &amp; Walk Through"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Overview" duration="5">
+        <h2 is-upgraded>What You&#39;ll Learn Today</h2>
+<p>Today we will cover the installation and value provided by the <a href="https://github.com/Dynatrace/dynatrace-operator" target="_blank">Dynatrace Kubernetes Operator deployment</a></p>
+<p>The Dynatrace operator is the k8s native way to gain full stack observability in your kubernetes and open shift environments. The Dynatrace operator provides continuous, automatic discovery &amp; observability across your kubernetes workloads. Leveraging Dynatrace, organizations can start Day 2 operations Day 1 and inform their shift left initiatives.</p>
+<p class="image-container"><img alt="ENVISION THE FUTURE!" src="img/6346b14ce9438bb8.png"></p>
+<h2 is-upgraded>In today&#39;s lab we will:</h2>
+<ol type="1">
+<li>Stand up an new kubernetes cluster</li>
+<li>Deploy the Dynatrace Operator</li>
+<li>Deploy a Microservice sample application</li>
+<li>Configure Real User Monitoring for our sample application</li>
+<li>Set up synthetic checks</li>
+<li>Review the full stack data collected by Dynatrace</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Technical Specification" duration="5">
+        <h2 is-upgraded>Technologies We Will Work With Today</h2>
+<ul>
+<li>Dynatrace SasS Tenant: https://www.dynatrace.com/trial/</li>
+<li>kubectl cli:  https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/</li>
+<li>Kubernetes: https://kubernetes.io/</li>
+<li>Google Kubernetes Engine: https://cloud.google.com</li>
+<li>Google Microservices Demo: https://github.com/GoogleCloudPlatform/microservices-demo</li>
+<li>Dynatrace Operator: https://github.com/Dynatrace/dynatrace-operator</li>
+</ul>
+<h2 is-upgraded>Dynatrace Operator Functionality Visualized:</h2>
+<p>The Dynatrace Operator deploys and maintains a DaemonSet across all workers nodes of your Kubernetes cluster. The Dynatrace Operator integrates with the Kubernetes API to provide native k8s events, monitors the cluster node health and provides code level visibility into all pods across all nodes <em>automatically</em>. <img alt="dynatrace operator in full stack" src="img/684af43e2b8a22a4.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="SETUP: Create a Google Kubernetes Engine Cluster" duration="5">
+        <h2 is-upgraded>Spin up a cluster in Google Kubernetes Engine</h2>
+<ol type="1">
+<li>Navigate to <a href="https://console.cloud.google.com/" target="_blank">The Google Cloud Console</a></li>
+<li>Navigate to <em>Kubernetes Engine –&gt; Clusters</em><img alt="step1" src="img/7930a3ee31760fd4.png"></li>
+<li>Click on &#34;Create&#34; <img alt="step2" src="img/61baf5d05b4ccd72.png"></li>
+<li>Select &#34;GKE Standard&#34; <img alt="step3" src="img/36cdb49a9a1348aa.png"></li>
+<li>Optionally, Update the &#34;name&#34; and &#34;zone&#34; fields and click &#34;Create&#34; <img alt="step4" src="img/de3ccd1733797924.png"></li>
+</ol>
+<p><code>Your Kubernetes cluster will now begin provisioning. This may take a few minutes to complete.</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="SETUP: Connect to You k8s Engine Cluster" duration="15">
+        <h2 is-upgraded>How to connect to you new kubernetes cluster</h2>
+<ol type="1">
+<li>Once your cluster has successfully provisioned click on connect and select &#34;<em>run  in cloud shell</em>&#34; <img alt="step7" src="img/80a7f59e81158bb3.png"></li>
+<li>Once the cloud shell provisions it will populate a gcloud command for you to run. Press enter to run this command.  <code>NOTE: YOU MUST RUN THIS COMMAND TO BE ABLE CONNECT TO THE K8S CLUSTER</code><img alt="step8" src="img/ac03cca32e2b7c4a.png"></li>
+<li>Once authenticated, run the command:  kubectl get nodes</li>
+<li>This will return a list of the running kubernetes nodes in your cluster <img alt="step9" src="img/25f9aea93e97b557.png"></li>
+</ol>
+<h2 is-upgraded>Optional: Setup CLI Tools</h2>
+<p>If you would prefer to work with your cluster via an existing terminal setup, see below documentation for installing the gcloud and kubectl binaries to connect to your cluster.</p>
+<h3 is-upgraded>Installing the gcloud cli</h3>
+<ol type="1">
+<li>Navigate to <a href="https://cloud.google.com/sdk/docs/install#linux" target="_blank">Installing the gcloud CLI Documentation</a></li>
+<li>Follow the installation instructions for your operating system: <img alt="step5" src="img/abbcb2c194006033.png"></li>
+</ol>
+<h3 is-upgraded>Installing kubectl cli</h3>
+<ol type="1">
+<li>Navigate to <a href="https://kubernetes.io/docs/tasks/tools/" target="_blank">kubectl Installation Documentation</a><img alt="step6" src="img/ea8aa0df3b163978.png"></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="SETUP: Instrument You Kubernetes Cluster Dynatrace" duration="15">
+        <ol type="1">
+<li>Now that your cluster is running, navigate to:  <em>DYNATRACE HUB –&gt; ONEAGENT –&gt; DOWNLOAD ONEAGENT</em><img alt="step10" src="img/e951b96f3545239d.png"></li>
+<li>Select &#34;<em>Kubernetes&#34;</em><img alt="step11" src="img/89a63e9f35a63091.png"></li>
+<li>Populate the name field, note that this must be unique to your environment</li>
+<li>Click on &#34;create tokens&#34;, this will generate new tokens for the operator deployment</li>
+<li>Toggle on &#34;skip ssl cert check&#34;</li>
+<li>Toggle on &#34;Enable Volume Storage&#34;</li>
+<li>This will populate a command which you will run in your google cloud shell</li>
+<li>Click on &#34;copy&#34; <img alt="step12" src="img/f7f69ec68321fb68.png"></li>
+<li>Then paste this command into the google cloud shell and run it: <img alt="step12" src="img/1971893640b78cfe.png"></li>
+<li>The below output will print when the operator has finished installing  <pre><code>dynakube.dynatrace.com/dynakube created
+Adding cluster to Dynatrace...
+Kubernetes monitoring successfully setup.
+</code></pre>
+</li>
+<li>Verify that all pods have been succefully deployed by running  kubectl get pods -n dynatrace  which should out put something similar to below:  <pre><code>NAME                                 READY   STATUS    RESTARTS   AGE
+dynakube-activegate-0                1/1     Running   0          3m59s
+dynakube-oneagent-t86lr              1/1     Running   0          3m59s
+dynakube-oneagent-z7tmk              1/1     Running   0          3m59s
+dynakube-oneagent-zkv4j              1/1     Running   0          3m59s
+dynatrace-operator-f64554bb9-wv6wf   1/1     Running   0          4m34s
+dynatrace-webhook-c55cd7fc9-j4jnf    1/1     Running   0          4m34s
+</code></pre>
+</li>
+<li>In your Dynatrace tenant, navigate to <em>INFRASTRUCTURE –&gt; KUBERNETES</em> Here you can your newly deployed cluster and any other k8s cluster you may have monitored with Dynatrace. <img alt="step14" src="img/1050167e59cc824e.png"></li>
+<li>Click on &#34;...&#34; under &#34;actions&#34; and select &#34;Settings&#34; <img alt="step14" src="img/fa68a1a59c3c3516.png"></li>
+<li>Scroll to the bottom of the page and toggle on both  <ul>
+<li>&#34;Monitor Events&#34;</li>
+<li>&#34;Opt in to the Kubernetes events integration for analysis and alerting&#34;</li>
+</ul>
+</li>
+<li>Click on &#34;Save Changes&#34; <img alt="step14" src="img/7838e1a67ef64a6b.png"></li>
+</ol>
+<p>=</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LAB: The Kubernetes API Integration" duration="5">
+        <h2 is-upgraded>Lets review the data Dynatrace has collected already:</h2>
+<p>Out of the box, Dynatrace automatically collects telemetry for</p>
+<ul>
+<li>Cluster utilization metrics  <ul>
+<li>CPU &amp; Memory Usage, Request and Limits</li>
+</ul>
+</li>
+<li>Kubernetes Workload Metrics Aggregated by  <ul>
+<li>Workload Type</li>
+<li>Pods</li>
+<li>Namespaces</li>
+</ul>
+</li>
+<li>Kubernetes Vulnerabilities<br></li>
+</ul>
+<p class="image-container"><img alt="step14" src="img/623be72ec45353d4.png"></p>
+<ul>
+<li>Lets also note what is missing, Kubernetes events. We configured Dynatrace to capture all events in this cluster in our last step. We will now create a new application deployment which will populate Kubernetes native events in our dashboard </li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LAB: Deploying the Google Micro Services Application" duration="0">
+        
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Wrap Up" duration="1">
+        <h2 is-upgraded>What You Learned Today</h2>
+<p>Review all the points you made at the start:</p>
+<ul>
+<li>What did you just learn?</li>
+<li>Why is this gained knowledge important?</li>
+<li>How will this knowledge now benefit your audience?</li>
+<li>What problem have we solved?</li>
+<li>Q&amp;A</li>
+</ul>
+<h2 is-upgraded>Supplemental Material</h2>
+<ul>
+<li><a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown Formatting Refernce</a></li>
+<li><a href="https://github.com/googlecodelabs/tools/blob/master/FORMAT-GUIDE.md" target="_blank">Codelab Formatting Guide</a></li>
+</ul>
+<p><code>have a great time</code></p>
+<p class="image-container"><img alt="kthnxbai" src="img/26975da5191ea0ca.gif"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
