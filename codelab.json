@@ -3,7 +3,7 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2022-02-14T08:42:23-08:00",
+  "updated": "2022-02-14T09:12:30-08:00",
   "id": "dt-kubernetes-setup",
   "duration": 111,
   "title": "Dynatrace K8s Operator Install \u0026 Walk Through",
