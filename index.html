@@ -151,7 +151,7 @@ dynatrace-webhook-c55cd7fc9-j4jnf    1/1     Running   0          4m34s
 <li>Namespaces</li>
 </ul>
 </li>
-<li>Kubernetes Vulnerabilities<br></li>
+<li>Kubernetes Vulnerabilities(!?)</li>
 </ul>
 <p class="image-container"><img alt="step14" src="img/623be72ec45353d4.png"></p>
 <ul>
@@ -161,28 +161,109 @@ dynatrace-webhook-c55cd7fc9-j4jnf    1/1     Running   0          4m34s
 
       </google-codelab-step>
     
-      <google-codelab-step label="LAB: Deploying the Google Micro Services Application" duration="0">
-        
+      <google-codelab-step label="LAB: Deploying the Google Micro Services Application" duration="10">
+        <p>Now we will deploy our sample application. We will use the Google Microservices demo application &#34;Online boutique&#34;, this version has been branched from the <a href="https://github.com/GoogleCloudPlatform/microservices-demo" target="_blank">original</a></p>
+<p><code>NEED TO UPDATE REPO WITH HARRINGTON NGINX CONFIG INSTALLER</code></p>
+<ol type="1">
+<li>Run &gt;kubectl apply -f release/kubernetes-manifests.yaml</li>
+<li>Wait for the resources to become ready in your cluster</li>
+<li>Verify all pods are running  kubectl get pods</li>
+<li>Once all  your pods are running we&#39;ll want to access the web application. Run</li>
+<li>kubectl get service nginx  <pre><code>NAME    TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)        AGE
+nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
+</code></pre>
+</li>
+<li>Copy the EXTERNAL-IP address and paste it into a browser: <img alt="step14" src="img/6d24dd30f08158a8.png"></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LAB: Creating a custom application" duration="15">
+        <p>Now that your application is running we will setup a custom application to review real user traffic</p>
+<ol type="1">
+<li>Navigate to _settings –&gt; web and mobile monitoring –&gt;  application dectection</li>
+<li>click on &#34;Add Detection Rule&#34; <img alt="step14" src="img/d710b0c8236a7b.png"></li>
+<li>Add a new rule with the following:  <ul>
+<li>new application</li>
+<li>name: &#34;micro services demo&#34;</li>
+<li>define the rule as:  &#34;if the url&#34; &#34;contains&#34;</li>
+<li>paste the url of the front end service</li>
+<li>Click &#34;Save&#34;</li>
+</ul>
+  <img alt="step14" src="img/c895caac75a9c3e1.png"></li>
+<li>Now that the application has been configured, navigate back your browser and lets explore the online boutique app. Dynatrace has already instrumented the web and infrastructure layer all we need now is some traffic! Take a minute to send some traffic to the application frontend.</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LAB: Exploring The Telemetry Collected by Dynatrace" duration="15">
+        <p>While we configured the front end of the application, the OneAgent daemonset we deployed earlier has been collecting our newly deployed application&#39;s telemetry data.</p>
+<ol type="1">
+<li>In your Dynatrace tenant, navigate to <em>INFRASTRUCTURE –&gt; KUBERNETES</em></li>
+<li>If we scroll down to the events section, we&#39;ll see that this now populating k8s native events from the google microservices deployment:  <ul>
+<li>Image pulls</li>
+<li>New scheduling events</li>
+<li>Pod starts</li>
+</ul>
+  <img alt="step14" src="img/6050ca7e1bb18bd3.png"></li>
+</ol>
+<p>Further, if any issues like image pull back offs or OOM errors were taking place, Dynatrace will automatically populate that information in this screen. Next lets review how we can review the telemetry data which is being collected by Dynatrace.</p>
+<ol type="1">
+<li>Navigate to <em>applications &amp; microservices –&gt; front end –&gt; Microservices Demo</em><img alt="step14" src="img/3f6a9f07bd32ca86.png"></li>
+<li>From this view we can see all of the webfront end interactions which dyantrace is instrumenting out of the box:  <ul>
+<li>End user load actions -Enduser interactions with the front end website</li>
+<li>apdex All of these are being instrumented out of the box with dynatrace full stack observability <img alt="step14" src="img/8fc3fcc17dba2138.png"></li>
+</ul>
+</li>
+<li>Next lets click on <em>&#34;service&#34; –&gt; &#34;view service flow&#34;</em></li>
+<li>This view shows how both our traffic and the synthetic checks are generating traffic in our application.</li>
+<li>The front end webserver is routing traffic through the nginx front end through all the microservices we&#39;ve deployed:  Dynatrace automatically instruments all transactions across all the containers we&#39;ve deployed and any future deployments as well. <img alt="step14" src="img/af14a06a4aaf0868.png"></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LAB: Kubernetes Scaling with Dynatrace" duration="15">
+        <p>Now that we&#39;ve seen how to dynatrace instruments an existing application lets see how dynatrace handles and instruments pods scaling.</p>
+<ol type="1">
+<li>Back in the cloud console lets see how many pods are currently runnings &gt; kubectl get pod</li>
+<li>Your console should return similar to the below: <img alt="step14" src="img/95376c1add084051.png">  kubectl get deployments</li>
+<li>Lets take a look a the deployments in the namespace, specifically the cart service <img alt="step14" src="img/ee356c75018cdf15.png"></li>
+<li>Lets scale the cart service up to 100 pods  kubectl scale deployment cartservice –replicas=100</li>
+<li>This will begin spinning up new pods. You can see this by running:  kubectl get pod <img alt="step14" src="img/a58e23dac8709e9a.png"></li>
+<li>Navigate to <em>Kubernetes Engine –&gt; Clusters –&gt; Workloads   </em><img alt="step14" src="img/5580a2082d2ea37f.png"></li>
+<li>From here we can immediately see that dynatrace has found an issue with trying to scale up the 100 pods we requested:  <ul>
+<li>all pods have been grouped together under the cart service work load</li>
+<li>only 48 of the 100 we we requested we scheduleable</li>
+<li>Dynatrace has automatically created a problem beacuase of the resource contention <img alt="step14" src="img/129c37a956f5c410.png"></li>
+</ul>
+</li>
+<li>With this information, Dynatrace can be leveraged to proactively scale these nodes or descrease the pods scaling to resolve the resouce contention. <img alt="step14" src="img/17e819bd7d9da516.png"></li>
+<li>Lets scale the pods back down  kubectl scale deployment cartservice –replicas=10</li>
+<li>From the workload level we can see the scaling events taking place:  <img alt="step14" src="img/155c26dba0e1cd5b.png"></li>
+<li>Once the pods stabilize dynatrace will automatically close this problem: <img alt="step14" src="img/c28cf3d9bb235fe1.png"></li>
+</ol>
+
 
       </google-codelab-step>
     
       <google-codelab-step label="Wrap Up" duration="1">
-        <h2 is-upgraded>What You Learned Today</h2>
-<p>Review all the points you made at the start:</p>
-<ul>
-<li>What did you just learn?</li>
-<li>Why is this gained knowledge important?</li>
-<li>How will this knowledge now benefit your audience?</li>
-<li>What problem have we solved?</li>
-<li>Q&amp;A</li>
-</ul>
+        <h2 is-upgraded>Lab recap</h2>
+<p>Today we reviewed how the dynatrace platform can be leveraged to provide full stack observability across your kubernetes environments. To you learned how to</p>
+<ol type="1">
+<li>Stand up up an new kubernetes cluster</li>
+<li>Deploy the Dynatrace Operator</li>
+<li>Deploy a Microservice sample application</li>
+<li>Configure Real User Monitoring for our sample application</li>
+<li>Set up synthetic checks</li>
+</ol>
 <h2 is-upgraded>Supplemental Material</h2>
 <ul>
 <li><a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown Formatting Refernce</a></li>
 <li><a href="https://github.com/googlecodelabs/tools/blob/master/FORMAT-GUIDE.md" target="_blank">Codelab Formatting Guide</a></li>
 </ul>
-<p><code>have a great time</code></p>
-<p class="image-container"><img alt="kthnxbai" src="img/26975da5191ea0ca.gif"></p>
 
 
       </google-codelab-step>
