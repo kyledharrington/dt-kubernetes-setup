@@ -114,7 +114,9 @@ Adding cluster to Dynatrace...
 Kubernetes monitoring successfully setup.
 </code></pre>
 </li>
-<li>Verify that all pods have been succefully deployed by running  kubectl get pods -n dynatrace  which should out put something similar to below:  <pre><code>NAME                                 READY   STATUS    RESTARTS   AGE
+<li>Verify that all pods have been succefully deployed by running  <pre><code>kubectl get pods -n dynatrace
+</code></pre>
+which should out put something similar to below:  <pre><code>NAME                                 READY   STATUS    RESTARTS   AGE
 dynakube-activegate-0                1/1     Running   0          3m59s
 dynakube-oneagent-t86lr              1/1     Running   0          3m59s
 dynakube-oneagent-z7tmk              1/1     Running   0          3m59s
@@ -162,14 +164,10 @@ dynatrace-webhook-c55cd7fc9-j4jnf    1/1     Running   0          4m34s
       <google-codelab-step label="LAB: Deploying the Google Micro Services Application" duration="10">
         <p>Now we will deploy our sample application. We will use the Google Microservices demo application &#34;Online boutique&#34;, this version has been branched from the <a href="https://github.com/GoogleCloudPlatform/microservices-demo" target="_blank">original</a></p>
 <ol type="1">
-<li>Run &gt;kubectl apply -f https://raw.githubusercontent.com/kyledharrington/dt-boutique/main/dt-boutique.yaml</li>
+<li>Run <br><code>kubectl apply -f https://raw.githubusercontent.com/kyledharrington/dt-boutique/main/dt-boutique.yaml<br></code></li>
 <li>Wait for the resources to become ready in your cluster</li>
-<li>Verify all pods are running  kubectl get pods</li>
-<li>Once all  your pods are running we&#39;ll want to access the web application. Run</li>
-<li>kubectl get service nginx  <pre><code>NAME    TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)        AGE
-nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
-</code></pre>
-</li>
+<li>Verify all pods are running <br><code>kubectl get pods<br></code></li>
+<li>Once all  your pods are running we&#39;ll want to access the web application. Run: <br><code>kubectl get service nginx<br><br>NAME    TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)        AGE<br>nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m<br></code></li>
 <li>Copy the EXTERNAL-IP address and paste it into a browser: <img alt="step14" src="img/6d24dd30f08158a8.png"></li>
 </ol>
 
@@ -225,11 +223,11 @@ nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
       <google-codelab-step label="LAB: Kubernetes Scaling with Dynatrace" duration="15">
         <p>Now that we&#39;ve seen how to dynatrace instruments an existing application lets see how dynatrace handles and instruments pods scaling.</p>
 <ol type="1">
-<li>Back in the cloud console lets see how many pods are currently runnings &gt; kubectl get pod</li>
-<li>Your console should return similar to the below: <img alt="step14" src="img/95376c1add084051.png">  kubectl get deployments</li>
+<li>Back in the cloud console lets see how many pods are currently runnings <br><code>kubectl get pod<br></code></li>
+<li>Your console should return similar to the below: <img alt="step14" src="img/95376c1add084051.png"><code><br>kubectl get deployments<br></code></li>
 <li>Lets take a look a the deployments in the namespace, specifically the cart service <img alt="step14" src="img/ee356c75018cdf15.png"></li>
-<li>Lets scale the cart service up to 100 pods  kubectl scale deployment cartservice –replicas=100</li>
-<li>This will begin spinning up new pods. You can see this by running:  kubectl get pod <img alt="step14" src="img/a58e23dac8709e9a.png"></li>
+<li>Lets scale the cart service up to 100 pods <br><code>kubectl scale deployment cartservice --replicas=100<br></code></li>
+<li>This will begin spinning up new pods. You can see this by running: <br><code>kubectl get pods<br></code><img alt="step14" src="img/a58e23dac8709e9a.png"></li>
 <li>Navigate to <em>Kubernetes Engine –&gt; Clusters –&gt; Workloads   </em><img alt="step14" src="img/5580a2082d2ea37f.png"></li>
 <li>From here we can immediately see that dynatrace has found an issue with trying to scale up the 100 pods we requested:  <ul>
 <li>all pods have been grouped together under the cart service work load</li>
@@ -238,7 +236,7 @@ nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
 </ul>
 </li>
 <li>With this information, Dynatrace can be leveraged to proactively scale these nodes or descrease the pods scaling to resolve the resouce contention. <img alt="step14" src="img/17e819bd7d9da516.png"></li>
-<li>Lets scale the pods back down  kubectl scale deployment cartservice –replicas=10</li>
+<li>Lets scale the pods back down <br><code>kubectl scale deployment cartservice --replicas=10<br></code></li>
 <li>From the workload level we can see the scaling events taking place:  <img alt="step14" src="img/155c26dba0e1cd5b.png"></li>
 <li>Once the pods stabilize dynatrace will automatically close this problem: <img alt="step14" src="img/c28cf3d9bb235fe1.png"></li>
 </ol>
@@ -246,7 +244,7 @@ nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
 
       </google-codelab-step>
     
-      <google-codelab-step label="Wrap Up" duration="1">
+      <google-codelab-step label="Wrap Up" duration="5">
         <h2 is-upgraded>Lab recap</h2>
 <p>Today we reviewed how the dynatrace platform can be leveraged to provide full stack observability across your kubernetes environments. To you learned how to</p>
 <ol type="1">
@@ -256,11 +254,6 @@ nginx   LoadBalancer   10.96.1.110   34.82.179.37   80:30457/TCP   54m
 <li>Configure Real User Monitoring for our sample application</li>
 <li>Set up synthetic checks</li>
 </ol>
-<h2 is-upgraded>Supplemental Material</h2>
-<ul>
-<li><a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown Formatting Refernce</a></li>
-<li><a href="https://github.com/googlecodelabs/tools/blob/master/FORMAT-GUIDE.md" target="_blank">Codelab Formatting Guide</a></li>
-</ul>
 
 
       </google-codelab-step>
