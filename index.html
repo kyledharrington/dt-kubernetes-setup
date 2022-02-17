@@ -161,9 +161,8 @@ dynatrace-webhook-c55cd7fc9-j4jnf    1/1     Running   0          4m34s
     
       <google-codelab-step label="LAB: Deploying the Google Micro Services Application" duration="10">
         <p>Now we will deploy our sample application. We will use the Google Microservices demo application &#34;Online boutique&#34;, this version has been branched from the <a href="https://github.com/GoogleCloudPlatform/microservices-demo" target="_blank">original</a></p>
-<p><code>NEED TO UPDATE REPO WITH HARRINGTON NGINX CONFIG INSTALLER</code></p>
 <ol type="1">
-<li>Run &gt;kubectl apply -f release/kubernetes-manifests.yaml</li>
+<li>Run &gt;kubectl apply -f https://raw.githubusercontent.com/kyledharrington/dt-boutique/main/dt-boutique.yaml</li>
 <li>Wait for the resources to become ready in your cluster</li>
 <li>Verify all pods are running  kubectl get pods</li>
 <li>Once all  your pods are running we&#39;ll want to access the web application. Run</li>
